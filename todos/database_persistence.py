@@ -33,45 +33,87 @@ class DatabasePersistence:
 
         lists = [dict(result) for result in results]
         for lst in lists:
-            lst.setdefault('todos', [])
+            todos = self._find_todos_for_list(lst['id'])
+            lst.setdefault('todos', todos)
 
         return lists
                 
     
     def create_new_list(self, title):
-        pass
+        query = 'INSERT INTO lists (title) VALUES (%s)'
+        logger.info('Executing query %s with title: %s', query, title)
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (title,))
 
     def create_new_todo(self, list_id, todo_title):
-        pass
+        query = 'INSERT INTO todos (list_id, title) VALUES (%s, %s)'
+        logger.info('Executing query: %s with list_id: %s and title: %s', query, list_id, todo_title)
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (list_id, todo_title,))
 
     def delete_list(self, list_id):
-        pass
+        query = 'DELETE FROM lists WHERE id = %s'
+        logger.info('Executing query: %s with id: %s', query, list_id)
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (list_id,))
 
     def delete_todo_by_id(self, list_id, todo_id):
-        pass
+        query = 'DELETE FROM todos WHERE list_id = %s AND id = %s'
+        logger.info('Executing query: %s with list_id: %s and id: %s', 
+                    query, list_id, todo_id)
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (list_id, todo_id,))
 
     def find_list(self, list_id):
         query = 'SELECT * FROM lists WHERE id = %s'
-        logger.info('Exeucuting query: %s with list_id: %s', query, list_id)
+        logger.info('Executing query: %s with list_id: %s', query, list_id)
         with self._database_connect() as conn:
             with conn.cursor(cursor_factory=DictCursor) as cursor:
                 cursor.execute(query, (list_id,))
                 lst = dict(cursor.fetchone())
-        lst.setdefault('todos', [])
+        
+        todos = self._find_todos_for_list(list_id)
+        lst.setdefault('todos', todos)
         return lst
 
+    def _find_todos_for_list(self, list_id):
+        query = 'SELECT * FROM todos WHERE list_id = %s'
+        logger.info('Executing query: %s with list_id %s', query, list_id)
+        with self._database_connect() as conn:
+            with conn.cursor(cursor_factory=DictCursor) as cursor:
+                cursor.execute(query, (list_id,))
+                return cursor.fetchall()
     
     def mark_all_todos_completed(self, list_id):
-        pass
+        query = 'UPDATE todos SET completed = True WHERE list_id = %s'
+        logger.info('Executing query: %s with list_id: %s', query, list_id)
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (list_id,))
 
     def update_list_by_id(self, list_id, new_title):
-        pass
+        query = 'UPDATE lists SET title = %s WHERE id = %s'
+        logger.info('Executing query: %s with new_title: %s and id: %s', 
+                    query, new_title, list_id)
+        
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (new_title, list_id,))
 
     def find_todo(self, list_id, todo_id):
         pass
 
     def update_todo_status(self, list_id, todo_id, new_status):
-        pass
+        query = 'UPDATE todos SET completed = %s WHERE list_id = %s AND id = %s'
+        logger.info('Executing query: %s with new status: %s, list_id: %s, and id: %s', 
+                    query, new_status, list_id, todo_id)
+        with self._database_connect() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (new_status, list_id, todo_id,))
 
 
     
