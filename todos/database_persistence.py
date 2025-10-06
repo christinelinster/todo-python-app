@@ -26,7 +26,7 @@ class DatabasePersistence:
 
 
     def __init__(self):
-        pass
+        self._setup_schema()
 
     def _setup_schema(self):
         with self._database_connect() as conn:
