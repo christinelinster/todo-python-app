@@ -1,36 +1,28 @@
-# 📋 Todo List Manager
+# Todos Application (PY175)
 
-Todo list management application built with Flask and PostgreSQL.
+**Repository:** [https://github.com/christinelinster/todo-python-app](https://github.com/christinelinster/todo-python-app)
 
-## Installation
+This is a dynamic CRUD (Create, Read, Update, Delete) web application built using the **Flask** microframework. Unlike the stateless echo servers built earlier in the course, this application utilizes **Client-Side Sessions** to persist state across HTTP requests, simulating a multi-user environment where each user maintains their own list of tasks.
 
-```bash
-git clone https://github.com/christinelinster/todo-python-app.git
-cd todo-python-app
-poetry install
+## Core Features
 
-# Database setup
-psql postgres -c "CREATE DATABASE todos;"
-psql -d todos -f schema.sql
+### Task Management (CRUD)
+* **Create:** Users can create new Todo Lists and add individual tasks to them.
+* **Read:** View a dashboard of all lists and drill down into specific lists to see pending tasks.
+* **Update:** Mark tasks as "Complete" or "Incomplete" and rename existing lists.
+* **Delete:** Remove tasks or entire lists with a confirmation step to prevent accidental deletion.
 
-# Run application
-poetry run python app.py
-```
 
-**Requirements:** Python 3.11+, PostgreSQL
+### User Experience (UX)
+* **Flash Messages:** Provides immediate feedback to the user after actions (e.g., "The list has been created," "Task updated").
+* **Input Validation:** Prevents invalid data submission (e.g., creating a list with an empty title or a duplicate name).
+* **Confirmation Dialogs:** Intercepts destructive actions (like deletion) to request user confirmation.
+* **Responsive Layout:** Uses a consistent `layout.html` template with Jinja2 blocks to render content dynamically.
 
-**Access:** `http://localhost:5003`
-
-## Features
-
-- Create and manage multiple todo lists
-- Add, edit, and delete todos within lists
-- Mark individual todos as complete/incomplete
-- Mark all todos in a list as complete
-- Sort lists and todos by completion status
-- Flash messages for user feedback
-- Custom decorators for resource validation
-- PostgreSQL persistence with database abstraction layer
+### Technical Implementation
+* **Session Persistence:** Uses signed cookies (`session` object) to store data, allowing the application to "remember" the state of lists and tasks between requests.
+* **Jinja2 Templating:** extensive use of template filters (custom filters for sorting lists) and macros.
+* **Request Hooks:** Utilizes `@app.before_request` to load global session data before each view function executes.
 
 ## Tech Stack
 
@@ -92,6 +84,32 @@ todo-python-app/
 └── pyproject.toml            # Poetry dependencies
 ```
 
+## Installation & Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/christinelinster/todo-python-app.git](https://github.com/christinelinster/todo-python-app.git)
+   cd todo-python-app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   poetry install
+   ```
+
+3. **Set up database:**
+   ```bash
+   psql postgres -c "CREATE DATABASE todos;"
+   psql -d todos -f schema.sql
+   ```
+4. **Run application:**
+   ```bash
+   poetry run python app.py
+   ```
+
+   **Requirements:** Python 3.11+, PostgreSQL
+   The app will be accessible at `http://localhost:5003`
+
 ## Deployment
 
 Production-ready with Gunicorn:
@@ -116,3 +134,4 @@ Christine Lin
 [GitHub](https://github.com/christinelinster) | [LinkedIn](https://linkedin.com/in/christinelin19/) | [Portfolio](https://christine-lin.vercel.app/)  
 
 Built with ☑️ for the list lovers.
+
